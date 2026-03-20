@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@theme {
+  --color-old-paper: #f2eadf; /* Un beige plus chaud, moins "jaune" */
+  --color-bourbon: #4e3524;
+}
+
+body {
+  background-color: var(--color-old-paper);
+  /* On ajoute une texture subtile de papier */
+  background-image: url("https://www.transparenttextures.com/patterns/cream-paper.png");
+  color: var(--color-bourbon);
+}
