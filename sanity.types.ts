@@ -13,55 +13,6 @@
  */
 
 // Source: schema.json
-export type Post = {
-  _id: string;
-  _type: "post";
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  title?: string;
-  slug?: Slug;
-  content?: Array<{
-    children?: Array<{
-      marks?: Array<string>;
-      text?: string;
-      _type: "span";
-      _key: string;
-    }>;
-    style?: "normal" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "blockquote";
-    listItem?: "bullet" | "number";
-    markDefs?: Array<{
-      href?: string;
-      _type: "link";
-      _key: string;
-    }>;
-    level?: number;
-    _type: "block";
-    _key: string;
-  }>;
-  excerpt?: string;
-  coverImage?: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    alt?: string;
-    _type: "image";
-  };
-  date?: string;
-  author?: {
-    _ref: string;
-    _type: "reference";
-    _weak?: boolean;
-    [internalGroqTypeReferenceTo]?: "author";
-  };
-};
-
 export type Author = {
   _id: string;
   _type: "author";
@@ -426,15 +377,8 @@ export type SanityAssetSourceData = {
   url?: string;
 };
 
-export type AllSanitySchemaTypes = Post | Author | Settings | Chronique | SanityAssistInstructionTask | SanityAssistTaskStatus | SanityAssistSchemaTypeAnnotations | SanityAssistOutputType | SanityAssistOutputField | SanityAssistInstructionContext | AssistInstructionContext | SanityAssistInstructionUserInput | SanityAssistInstructionPrompt | SanityAssistInstructionFieldRef | SanityAssistInstruction | SanityAssistSchemaTypeField | SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityImageHotspot | SanityImageCrop | SanityFileAsset | SanityImageAsset | SanityImageMetadata | Geopoint | Slug | SanityAssetSourceData;
+export type AllSanitySchemaTypes = Author | Settings | Chronique | SanityAssistInstructionTask | SanityAssistTaskStatus | SanityAssistSchemaTypeAnnotations | SanityAssistOutputType | SanityAssistOutputField | SanityAssistInstructionContext | AssistInstructionContext | SanityAssistInstructionUserInput | SanityAssistInstructionPrompt | SanityAssistInstructionFieldRef | SanityAssistInstruction | SanityAssistSchemaTypeField | SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityImageHotspot | SanityImageCrop | SanityFileAsset | SanityImageAsset | SanityImageMetadata | Geopoint | Slug | SanityAssetSourceData;
 export declare const internalGroqTypeReferenceTo: unique symbol;
-// Source: ./app/(blog)/posts/[slug]/page.tsx
-// Variable: postSlugs
-// Query: *[_type == "post" && defined(slug.current)]{"slug": slug.current}
-export type PostSlugsResult = Array<{
-  slug: string | null;
-}>;
-
 // Source: ./sanity/lib/queries.ts
 // Variable: settingsQuery
 // Query: *[_type == "settings"][0]
@@ -497,9 +441,9 @@ export type SettingsQueryResult = {
   };
 } | null;
 // Variable: heroQuery
-// Query: *[_type == "post" && defined(slug.current)] | order(date desc, _updatedAt desc) [0] {    content,      _id,  "status": select(_originalId in path("drafts.**") => "draft", "published"),  "title": coalesce(title, "Untitled"),  "slug": slug.current,  excerpt,  coverImage,  "date": coalesce(date, _updatedAt),  "author": author->{"name": coalesce(name, "Anonymous"), picture},  }
+// Query: *[_type == "chronique" && defined(slug.current) && publishedAt <= now()] | order(publishedAt desc) [0] {    body,      _id,  "status": select(_originalId in path("drafts.**") => "draft", "published"),  "title": coalesce(title, "Sans titre"),  "slug": slug.current,  "date": coalesce(publishedAt, _createdAt),  "coverImage": coverImage,  "rating": rating,  "author": author->{"name": coalesce(name, "Cyril"), picture},  "excerpt": array::join(string::split(pt::text(body), "")[0...200], "") + "...",  spotifyUrl  }
 export type HeroQueryResult = {
-  content: Array<{
+  body: Array<{
     children?: Array<{
       marks?: Array<string>;
       text?: string;
@@ -519,9 +463,9 @@ export type HeroQueryResult = {
   }> | null;
   _id: string;
   status: "draft" | "published";
-  title: string | "Untitled";
+  title: string | "Sans titre";
   slug: string | null;
-  excerpt: string | null;
+  date: string;
   coverImage: {
     asset?: {
       _ref: string;
@@ -532,35 +476,21 @@ export type HeroQueryResult = {
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
-    alt?: string;
     _type: "image";
   } | null;
-  date: string;
-  author: {
-    name: string | "Anonymous";
-    picture: {
-      asset?: {
-        _ref: string;
-        _type: "reference";
-        _weak?: boolean;
-        [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-      };
-      media?: unknown;
-      hotspot?: SanityImageHotspot;
-      crop?: SanityImageCrop;
-      alt?: string;
-      _type: "image";
-    } | null;
-  } | null;
+  rating: number | null;
+  author: null;
+  excerpt: string;
+  spotifyUrl: string | null;
 } | null;
 // Variable: moreStoriesQuery
-// Query: *[_type == "post" && _id != $skip && defined(slug.current)] | order(date desc, _updatedAt desc) [0...$limit] {      _id,  "status": select(_originalId in path("drafts.**") => "draft", "published"),  "title": coalesce(title, "Untitled"),  "slug": slug.current,  excerpt,  coverImage,  "date": coalesce(date, _updatedAt),  "author": author->{"name": coalesce(name, "Anonymous"), picture},  }
+// Query: *[_type == "chronique" && _id != $skip && defined(slug.current) && publishedAt <= now()] | order(publishedAt desc) [0...$limit] {      _id,  "status": select(_originalId in path("drafts.**") => "draft", "published"),  "title": coalesce(title, "Sans titre"),  "slug": slug.current,  "date": coalesce(publishedAt, _createdAt),  "coverImage": coverImage,  "rating": rating,  "author": author->{"name": coalesce(name, "Cyril"), picture},  "excerpt": array::join(string::split(pt::text(body), "")[0...200], "") + "...",  spotifyUrl  }
 export type MoreStoriesQueryResult = Array<{
   _id: string;
   status: "draft" | "published";
-  title: string | "Untitled";
+  title: string | "Sans titre";
   slug: string | null;
-  excerpt: string | null;
+  date: string;
   coverImage: {
     asset?: {
       _ref: string;
@@ -571,31 +501,40 @@ export type MoreStoriesQueryResult = Array<{
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
-    alt?: string;
     _type: "image";
   } | null;
-  date: string;
-  author: {
-    name: string | "Anonymous";
-    picture: {
-      asset?: {
-        _ref: string;
-        _type: "reference";
-        _weak?: boolean;
-        [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-      };
-      media?: unknown;
-      hotspot?: SanityImageHotspot;
-      crop?: SanityImageCrop;
-      alt?: string;
-      _type: "image";
-    } | null;
-  } | null;
+  rating: number | null;
+  author: null;
+  excerpt: string;
+  spotifyUrl: string | null;
 }>;
 // Variable: postQuery
-// Query: *[_type == "post" && slug.current == $slug] [0] {    content,      _id,  "status": select(_originalId in path("drafts.**") => "draft", "published"),  "title": coalesce(title, "Untitled"),  "slug": slug.current,  excerpt,  coverImage,  "date": coalesce(date, _updatedAt),  "author": author->{"name": coalesce(name, "Anonymous"), picture},  }
+// Query: *[_type == "chronique" && slug.current == $slug][0] {    ...,      _id,  "status": select(_originalId in path("drafts.**") => "draft", "published"),  "title": coalesce(title, "Sans titre"),  "slug": slug.current,  "date": coalesce(publishedAt, _createdAt),  "coverImage": coverImage,  "rating": rating,  "author": author->{"name": coalesce(name, "Cyril"), picture},  "excerpt": array::join(string::split(pt::text(body), "")[0...200], "") + "...",  spotifyUrl,    body  }
 export type PostQueryResult = {
-  content: Array<{
+  _id: string;
+  _type: "chronique";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  title: string | "Sans titre";
+  slug: string | null;
+  coverImage: {
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  } | null;
+  rating: number | null;
+  spotifyUrl: string | null;
+  direction?: "est" | "nord" | "ouest" | "sud";
+  publishedAt?: string;
+  body: Array<{
     children?: Array<{
       marks?: Array<string>;
       text?: string;
@@ -613,51 +552,19 @@ export type PostQueryResult = {
     _type: "block";
     _key: string;
   }> | null;
-  _id: string;
   status: "draft" | "published";
-  title: string | "Untitled";
-  slug: string | null;
-  excerpt: string | null;
-  coverImage: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    alt?: string;
-    _type: "image";
-  } | null;
   date: string;
-  author: {
-    name: string | "Anonymous";
-    picture: {
-      asset?: {
-        _ref: string;
-        _type: "reference";
-        _weak?: boolean;
-        [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-      };
-      media?: unknown;
-      hotspot?: SanityImageHotspot;
-      crop?: SanityImageCrop;
-      alt?: string;
-      _type: "image";
-    } | null;
-  } | null;
+  author: null;
+  excerpt: string;
 } | null;
 
 // Query TypeMap
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
-    "*[_type == \"post\" && defined(slug.current)]{\"slug\": slug.current}": PostSlugsResult;
     "*[_type == \"settings\"][0]": SettingsQueryResult;
-    "\n  *[_type == \"post\" && defined(slug.current)] | order(date desc, _updatedAt desc) [0] {\n    content,\n    \n  _id,\n  \"status\": select(_originalId in path(\"drafts.**\") => \"draft\", \"published\"),\n  \"title\": coalesce(title, \"Untitled\"),\n  \"slug\": slug.current,\n  excerpt,\n  coverImage,\n  \"date\": coalesce(date, _updatedAt),\n  \"author\": author->{\"name\": coalesce(name, \"Anonymous\"), picture},\n\n  }\n": HeroQueryResult;
-    "\n  *[_type == \"post\" && _id != $skip && defined(slug.current)] | order(date desc, _updatedAt desc) [0...$limit] {\n    \n  _id,\n  \"status\": select(_originalId in path(\"drafts.**\") => \"draft\", \"published\"),\n  \"title\": coalesce(title, \"Untitled\"),\n  \"slug\": slug.current,\n  excerpt,\n  coverImage,\n  \"date\": coalesce(date, _updatedAt),\n  \"author\": author->{\"name\": coalesce(name, \"Anonymous\"), picture},\n\n  }\n": MoreStoriesQueryResult;
-    "\n  *[_type == \"post\" && slug.current == $slug] [0] {\n    content,\n    \n  _id,\n  \"status\": select(_originalId in path(\"drafts.**\") => \"draft\", \"published\"),\n  \"title\": coalesce(title, \"Untitled\"),\n  \"slug\": slug.current,\n  excerpt,\n  coverImage,\n  \"date\": coalesce(date, _updatedAt),\n  \"author\": author->{\"name\": coalesce(name, \"Anonymous\"), picture},\n\n  }\n": PostQueryResult;
+    "\n  *[_type == \"chronique\" && defined(slug.current) && publishedAt <= now()] | order(publishedAt desc) [0] {\n    body,\n    \n  _id,\n  \"status\": select(_originalId in path(\"drafts.**\") => \"draft\", \"published\"),\n  \"title\": coalesce(title, \"Sans titre\"),\n  \"slug\": slug.current,\n  \"date\": coalesce(publishedAt, _createdAt),\n  \"coverImage\": coverImage,\n  \"rating\": rating,\n  \"author\": author->{\"name\": coalesce(name, \"Cyril\"), picture},\n  \"excerpt\": array::join(string::split(pt::text(body), \"\")[0...200], \"\") + \"...\",\n  spotifyUrl\n\n  }\n": HeroQueryResult;
+    "\n  *[_type == \"chronique\" && _id != $skip && defined(slug.current) && publishedAt <= now()] | order(publishedAt desc) [0...$limit] {\n    \n  _id,\n  \"status\": select(_originalId in path(\"drafts.**\") => \"draft\", \"published\"),\n  \"title\": coalesce(title, \"Sans titre\"),\n  \"slug\": slug.current,\n  \"date\": coalesce(publishedAt, _createdAt),\n  \"coverImage\": coverImage,\n  \"rating\": rating,\n  \"author\": author->{\"name\": coalesce(name, \"Cyril\"), picture},\n  \"excerpt\": array::join(string::split(pt::text(body), \"\")[0...200], \"\") + \"...\",\n  spotifyUrl\n\n  }\n": MoreStoriesQueryResult;
+    "\n  *[_type == \"chronique\" && slug.current == $slug][0] {\n    ...,\n    \n  _id,\n  \"status\": select(_originalId in path(\"drafts.**\") => \"draft\", \"published\"),\n  \"title\": coalesce(title, \"Sans titre\"),\n  \"slug\": slug.current,\n  \"date\": coalesce(publishedAt, _createdAt),\n  \"coverImage\": coverImage,\n  \"rating\": rating,\n  \"author\": author->{\"name\": coalesce(name, \"Cyril\"), picture},\n  \"excerpt\": array::join(string::split(pt::text(body), \"\")[0...200], \"\") + \"...\",\n  spotifyUrl\n,\n    body\n  }\n": PostQueryResult;
   }
 }

@@ -1,0 +1,12 @@
+name: Deploy on Schedule
+on:
+  repository_dispatch:
+    types: [publish-event] # Le nom de l'événement qu'on va envoyer
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Vercel/Netlify Build
+        run: |
+          curl -X POST ${{ secrets.DEPLOY_HOOK_URL }}

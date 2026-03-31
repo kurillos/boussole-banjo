@@ -4,12 +4,12 @@
 
 import { assist } from "@sanity/assist";
 
-import postType from "../schemas/documents/post";
+import chronique from '../schemas/chronique'
 
 export const assistWithPresets = () =>
   assist({
     __presets: {
-      [postType.name]: {
+      [chronique.name]: {
         fields: [
           {
             /**

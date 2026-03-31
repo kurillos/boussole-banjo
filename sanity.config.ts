@@ -4,7 +4,7 @@
  */
 import { visionTool } from "@sanity/vision";
 import { PluginOptions, defineConfig } from "sanity";
-import chronique from './sanity/schemas/chronique'
+import chronique from "@/sanity/schemas/chronique";
 import { unsplashImageAsset } from "sanity-plugin-asset-source-unsplash";
 import {
   presentationTool,
@@ -18,7 +18,6 @@ import { apiVersion, dataset, projectId, studioUrl } from "@/sanity/lib/api";
 import { pageStructure, singletonPlugin } from "@/sanity/plugins/settings";
 import { assistWithPresets } from "@/sanity/plugins/assist";
 import author from "@/sanity/schemas/documents/author";
-import post from "@/sanity/schemas/documents/post";
 import settings from "@/sanity/schemas/singletons/settings";
 import { resolveHref } from "@/sanity/lib/utils";
 
@@ -36,7 +35,6 @@ export default defineConfig({
       chronique,
       settings,
       // Documents
-      post,
       author,
     ],
   },
@@ -46,7 +44,7 @@ export default defineConfig({
         mainDocuments: defineDocuments([
           {
             route: "/posts/:slug",
-            filter: `_type == "post" && slug.current == $slug`,
+            filter: `_type == "chronique" && slug.current == $slug`,
           },
         ]),
         locations: {
@@ -55,7 +53,7 @@ export default defineConfig({
             message: "This document is used on all pages",
             tone: "caution",
           }),
-          post: defineLocations({
+          chronique: defineLocations({
             select: {
               title: "title",
               slug: "slug.current",
@@ -64,7 +62,7 @@ export default defineConfig({
               locations: [
                 {
                   title: doc?.title || "Untitled",
-                  href: resolveHref("post", doc?.slug)!,
+                  href: resolveHref("chronique", doc?.slug)!,
                 },
                 homeLocation,
               ],

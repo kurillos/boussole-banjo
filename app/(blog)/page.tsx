@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Suspense } from "react";
+import { Lock } from "lucide-react";
 
 import Avatar from "./avatar";
 import CoverImage from "./cover-image";
@@ -35,37 +36,49 @@ function HeroPost({
   rating,
 }: any) {
   return (
-    <article className="relative bg-white/40 backdrop-blur-sm border border-[#4E3524]/10 p-6 md:p-10 rounded-2xl shadow-xl transition-transform hover:scale-[1.005]">
-      <Link className="group mb-8 block md:mb-16 overflow-hidden rounded-lg shadow-2xl" href={`/posts/${slug}`}>
-        <CoverImage image={coverImage} priority />
-      </Link>
-      <div className="mb-8 md:grid md:grid-cols-2 md:gap-x-16 lg:gap-x-8">
-        <div>
-          <h3 className="text-pretty mb-4 text-4xl leading-tight lg:text-6xl font-serif text-[#4E3524] uppercase">
-            <Link href={`/posts/${slug}`} className="hover:text-[#D2B48C] transition-colors">
-              {title}
-            </Link>
-          </h3>
-          
-          {/* L'AFFICHAGE DES STETSONS EST ICI MAINTENANT */}
-          <div className="mb-6">
-            <StetsonRating rating={rating || 0} />
-          </div>
-
-          <div className="mb-4 text-lg md:mb-0 font-sans text-[#4E3524]/60">
-            <DateComponent dateString={date} />
-          </div>
-        </div>
-        <div>
-          {excerpt && (
-            <p className="text-pretty mb-4 text-lg leading-relaxed text-[#4E3524]/80">
-              {excerpt}
-            </p>
-          )}
-          {author && <Avatar name={author.name} picture={author.picture} />}
-        </div>
+    /* On utilise <> pour grouper les éléments sans ajouter de div inutile */
+    <>
+      <div className="fixed top-4 right-4 z-50">
+        <Link 
+          href="/studio" 
+          className="flex items-center justify-center w-10 h-10 rounded-full bg-[#4E3524]/10 text-[#4E3524]/40 hover:bg-[#4E3524] hover:text-white transition-all duration-300 backdrop-blur-sm border border-[#4E3524]/20 shadow-sm group"
+          title="Accéder au Studio"
+        >
+          <Lock size={18} className="group-hover:scale-110 transition-transform" />
+        </Link>
       </div>
-    </article>
+
+      <article className="relative bg-white/40 backdrop-blur-sm border border-[#4E3524]/10 p-6 md:p-10 rounded-2xl shadow-xl transition-transform hover:scale-[1.005]">
+        <Link className="group mb-8 block md:mb-16 overflow-hidden rounded-lg shadow-2xl" href={`/posts/${slug}`}>
+          <CoverImage image={coverImage} priority />
+        </Link>
+        <div className="mb-8 md:grid md:grid-cols-2 md:gap-x-16 lg:gap-x-8">
+          <div>
+            <h3 className="text-pretty mb-4 text-4xl leading-tight lg:text-6xl font-serif text-[#4E3524] uppercase">
+              <Link href={`/posts/${slug}`} className="hover:text-[#D2B48C] transition-colors">
+                {title}
+              </Link>
+            </h3>
+            
+            <div className="mb-6">
+              <StetsonRating rating={rating || 0} />
+            </div>
+
+            <div className="mb-4 text-lg md:mb-0 font-sans text-[#4E3524]/60">
+              <DateComponent dateString={date} />
+            </div>
+          </div>
+          <div>
+            {excerpt && (
+              <p className="text-pretty mb-4 text-lg leading-relaxed text-[#4E3524]/80">
+                {excerpt}
+              </p>
+            )}
+            {author && <Avatar name={author.name} picture={author.picture} />}
+          </div>
+        </div>
+      </article>
+    </>
   );
 }
 
