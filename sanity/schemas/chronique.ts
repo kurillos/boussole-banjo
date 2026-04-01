@@ -65,7 +65,27 @@ export default defineType({
       name: 'body',
       title: 'Contenu de la chronique',
       type: 'array',
-      of: [{ type: 'block' }]
+      of: [
+        { 
+          type: 'block'
+        },
+        {
+          type: 'image',
+          options: { hotspot: true },
+          fields: [
+            {
+              name: 'alt',
+              type: 'string',
+              title: 'Description de l\'image (attribut alt)',
+            },
+            {
+              name: 'caption',
+              type: 'string',
+              title: 'Légende de l\'image (affichée sous l\'image)',
+            }
+          ]
+        }
+      ]
     }),
   ],
 })
