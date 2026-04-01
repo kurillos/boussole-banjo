@@ -13,6 +13,10 @@ import { heroQuery, settingsQuery } from "@/sanity/lib/queries";
 
 import StetsonRating from "../components/StetsonRating";
 
+/* On a supprimé l'import de Container car tu n'as pas le fichier. 
+  On utilise directement les classes Tailwind à la place.
+*/
+
 function Intro() {
   return (
     <section className="mt-16 mb-16 flex flex-col items-center lg:mb-12 lg:flex-row lg:justify-between border-b-2 border-[#4E3524]/10 pb-10">
@@ -36,8 +40,8 @@ function HeroPost({
   rating,
 }: any) {
   return (
-    /* On utilise <> pour grouper les éléments sans ajouter de div inutile */
     <>
+      {/* Petit bouton discret pour le studio */}
       <div className="fixed top-4 right-4 z-50">
         <Link 
           href="/studio" 
@@ -89,6 +93,9 @@ export default async function Page() {
   ]);
 
   return (
+    /* Ici, la div remplace le composant Container en utilisant les mêmes classes 
+      pour centrer ton contenu proprement.
+    */
     <div className="container mx-auto px-5 pb-20">
       <Intro />
       {heroPost ? (

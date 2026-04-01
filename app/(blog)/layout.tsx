@@ -15,6 +15,7 @@ import * as demo from "@/sanity/lib/demo";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import { settingsQuery } from "@/sanity/lib/queries";
 import { resolveOpenGraphImage } from "@/sanity/lib/utils";
+import Navbar from "./navbar";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await sanityFetch({
@@ -65,7 +66,7 @@ export default async function RootLayout({
     <html lang="fr" className={`${inter.variable} bg-[#fdf6e3] text-black`}>
       <body>
         <section className="min-h-screen flex flex-col bg-old-paper">
-          {/* Le bandeau AlertBanner (GitHub/Source) a été supprimé d'ici */}
+          <Navbar />
           
           <main className="flex-grow">
             {children}
