@@ -20,7 +20,8 @@ import { resolveHref } from "@/sanity/lib/utils";
 import chronique from "@/sanity/schemas/chronique";
 import author from "@/sanity/schemas/documents/author";
 import settings from "@/sanity/schemas/singletons/settings";
-import about from "./sanity/schemas/about";
+// LE CHEMIN CORRIGÉ ICI :
+import about from "@/sanity/schemas/about";
 
 const homeLocation = {
   title: "Home",
@@ -32,7 +33,6 @@ export default defineConfig({
   projectId,
   dataset,
   schema: {
-    // On enregistre tous les types ici
     types: [chronique, settings, author, about],
   },
   plugins: [
@@ -69,29 +69,27 @@ export default defineConfig({
       },
       previewUrl: { previewMode: { enable: "/api/draft-mode/enable" } },
     }),
-    // CONFIGURATION DE LA STRUCTURE (Le menu à gauche)
+    // ON FORCE LA STRUCTURE ICI POUR VOIR LE MANIFESTE
     structureTool({
       structure: (S) =>
         S.list()
-          .title("Boussole & Banjo - Gazette")
+          .title("Contenu")
           .items([
-            // 1. On force l'affichage du Manifeste en haut (en mode "Page Unique")
+            // Bouton Manifeste
             S.listItem()
               .title("Manifeste")
               .child(
                 S.document()
                   .schemaType("about")
                   .documentId("about")
-                  .title("Mon Manifeste")
               ),
             S.divider(),
-            // 2. On affiche le reste (Chroniques, Auteurs) automatiquement
+            // Liste automatique pour Chroniques et Authors
             ...S.documentTypeListItems().filter(
-              (item) => 
-                !["about", "settings", "assist.instruction.context"].includes(item.getId()!)
+              (item) => !["about", "settings", "assist.instruction.context"].includes(item.getId()!)
             ),
             S.divider(),
-            // 3. Les paramètres du site en bas
+            // Bouton Paramètres
             S.listItem()
               .title("Paramètres du site")
               .child(
