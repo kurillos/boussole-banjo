@@ -20,7 +20,7 @@ import { assistWithPresets } from "@/sanity/plugins/assist";
 import author from "@/sanity/schemas/documents/author";
 import settings from "@/sanity/schemas/singletons/settings";
 import { resolveHref } from "@/sanity/lib/utils";
-import about from './sanity/schemas/about'
+import about from "@/sanity/schemas/about";
 
 const homeLocation = {
   title: "Home",
@@ -74,7 +74,7 @@ export default defineConfig({
       },
       previewUrl: { previewMode: { enable: "/api/draft-mode/enable" } },
     }),
-    structureTool({ structure: pageStructure([settings]) }),
+    structureTool({ structure: pageStructure([settings, about]) }),
     // Configures the global "new document" button, and document actions, to suit the Settings document singleton
     singletonPlugin([settings.name]),
     // Add an image asset source for Unsplash
