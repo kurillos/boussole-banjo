@@ -20,6 +20,7 @@ import { assistWithPresets } from "@/sanity/plugins/assist";
 import author from "@/sanity/schemas/documents/author";
 import settings from "@/sanity/schemas/singletons/settings";
 import { resolveHref } from "@/sanity/lib/utils";
+import about from './sanity/schemas/about'
 
 const homeLocation = {
   title: "Home",
@@ -36,6 +37,7 @@ export default defineConfig({
       settings,
       // Documents
       author,
+      about,
     ],
   },
   plugins: [

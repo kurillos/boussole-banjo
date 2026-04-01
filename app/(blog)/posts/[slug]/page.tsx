@@ -1,10 +1,43 @@
+import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import { postQuery } from "@/sanity/lib/queries";
 import PortableText from "../../portable-text"; 
 import CoverImage from "../../cover-image";
 import SpotifyPlayer from "../../../components/SpotifyPlayer";
+import { urlForImage } from "@/sanity/lib/utils"; // Assure-toi d'avoir cet utilitaire
 
+// 1. Fonction pour les Métadonnées (SEO)
+export async function generateMetadata(
+  { params }: { params: Promise<{ slug: string }> }
+): Promise<Metadata> {
+  const { slug } = await params;
+  const post = await sanityFetch({ 
+    query: postQuery, 
+    params: { slug }, 
+    stega: false 
+  });
+
+  if (!post) return {};
+
+  return {
+    title: post.title,
+    description: post.excerpt,
+    openGraph: {
+      title: post.title,
+      description: post.excerpt,
+      images: post.coverImage?.asset ? [
+        {
+          url: urlForImage(post.coverImage).width(1200).height(630).url(),
+          width: 1200,
+          height: 630,
+        },
+      ] : [],
+    },
+  };
+}
+
+// 2. Le Composant de la Page
 export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   
@@ -30,14 +63,18 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
       </div>
 
       {/* Lecteur Spotify intégré */}
-      {post.spotifyUrl && <SpotifyPlayer url={post.spotifyUrl} />}
+      {post.spotifyUrl && (
+        <div className="mb-10">
+          <SpotifyPlayer url={post.spotifyUrl} />
+        </div>
+      )}
 
       {/* Corps de la chronique */}
       <div className="prose prose-lg prose-stone max-w-none font-serif text-[#4E3524]/90 leading-relaxed italic-quotes">
         {post.body ? (
           <PortableText value={post.body as any} />
         ) : (
-          <p>Le contenu de cette chronique est en cours de rédaction...</p>
+          <p className="italic text-[#4E3524]/60">Le contenu de cette chronique est en cours de rédaction...</p>
         )}
       </div>
     </article>
