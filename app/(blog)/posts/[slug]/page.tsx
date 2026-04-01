@@ -35,7 +35,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
       {/* Corps de la chronique */}
       <div className="prose prose-lg prose-stone max-w-none font-serif text-[#4E3524]/90 leading-relaxed italic-quotes">
         {post.body ? (
-          <PortableText value={post.body} />
+          <PortableText value={post.body as any} />
         ) : (
           <p>Le contenu de cette chronique est en cours de rédaction...</p>
         )}
