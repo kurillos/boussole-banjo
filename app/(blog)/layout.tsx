@@ -16,6 +16,7 @@ import { sanityFetch } from "@/sanity/lib/fetch";
 import { settingsQuery } from "@/sanity/lib/queries";
 import { resolveOpenGraphImage } from "@/sanity/lib/utils";
 import Navbar from "./navbar";
+import { GoogleAnalytics } from '@next/third-parties/google';
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await sanityFetch({
@@ -112,6 +113,7 @@ export default async function RootLayout({
         {/* Outils de prévisualisation Vercel/Sanity */}
         {isDraftMode && <VisualEditing />}
         <SpeedInsights />
+        <GoogleAnalytics gaId="G-HM43BXEXBB" />
       </body>
     </html>
   );

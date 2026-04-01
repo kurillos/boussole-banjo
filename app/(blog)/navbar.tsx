@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Container from "./container";
+import Search from "./search";
 
 
 export default function Navbar() {
@@ -26,6 +27,9 @@ export default function Navbar() {
             >
               Contact
             </Link>
+
+            <Search />
+            
           </div>
         </div>
       </Container>
