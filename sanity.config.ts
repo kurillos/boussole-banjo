@@ -1,10 +1,7 @@
 "use client";
-/**
- * This config is used to set up Sanity Studio that's mounted on the `app/(sanity)/studio/[[...tool]]/page.tsx` route
- */
+
 import { visionTool } from "@sanity/vision";
 import { PluginOptions, defineConfig } from "sanity";
-import chronique from "@/sanity/schemas/chronique";
 import { unsplashImageAsset } from "sanity-plugin-asset-source-unsplash";
 import {
   presentationTool,
@@ -14,13 +11,16 @@ import {
 } from "sanity/presentation";
 import { structureTool } from "sanity/structure";
 
+// Import des variables d'environnement et API
 import { apiVersion, dataset, projectId, studioUrl } from "@/sanity/lib/api";
-import { pageStructure, singletonPlugin } from "@/sanity/plugins/settings";
 import { assistWithPresets } from "@/sanity/plugins/assist";
+import { resolveHref } from "@/sanity/lib/utils";
+
+// Import de tes schémas
+import chronique from "@/sanity/schemas/chronique";
 import author from "@/sanity/schemas/documents/author";
 import settings from "@/sanity/schemas/singletons/settings";
-import { resolveHref } from "@/sanity/lib/utils";
-import about from "@/sanity/schemas/about";
+import about from "./sanity/schemas/about";
 
 const homeLocation = {
   title: "Home",
@@ -32,13 +32,8 @@ export default defineConfig({
   projectId,
   dataset,
   schema: {
-    types: [
-      chronique,
-      settings,
-      // Documents
-      author,
-      about,
-    ],
+    // On enregistre tous les types ici
+    types: [chronique, settings, author, about],
   },
   plugins: [
     presentationTool({
@@ -52,7 +47,7 @@ export default defineConfig({
         locations: {
           settings: defineLocations({
             locations: [homeLocation],
-            message: "This document is used on all pages",
+            message: "Ce document est utilisé sur toutes les pages",
             tone: "caution",
           }),
           chronique: defineLocations({
@@ -63,7 +58,7 @@ export default defineConfig({
             resolve: (doc) => ({
               locations: [
                 {
-                  title: doc?.title || "Untitled",
+                  title: doc?.title || "Sans titre",
                   href: resolveHref("chronique", doc?.slug)!,
                 },
                 homeLocation,
@@ -74,16 +69,40 @@ export default defineConfig({
       },
       previewUrl: { previewMode: { enable: "/api/draft-mode/enable" } },
     }),
-    structureTool(),
-    // Configures the global "new document" button, and document actions, to suit the Settings document singleton
-    singletonPlugin([settings.name]),
-    // Add an image asset source for Unsplash
+    // CONFIGURATION DE LA STRUCTURE (Le menu à gauche)
+    structureTool({
+      structure: (S) =>
+        S.list()
+          .title("Boussole & Banjo - Gazette")
+          .items([
+            // 1. On force l'affichage du Manifeste en haut (en mode "Page Unique")
+            S.listItem()
+              .title("Manifeste")
+              .child(
+                S.document()
+                  .schemaType("about")
+                  .documentId("about")
+                  .title("Mon Manifeste")
+              ),
+            S.divider(),
+            // 2. On affiche le reste (Chroniques, Auteurs) automatiquement
+            ...S.documentTypeListItems().filter(
+              (item) => 
+                !["about", "settings", "assist.instruction.context"].includes(item.getId()!)
+            ),
+            S.divider(),
+            // 3. Les paramètres du site en bas
+            S.listItem()
+              .title("Paramètres du site")
+              .child(
+                S.document()
+                  .schemaType("settings")
+                  .documentId("settings")
+              ),
+          ]),
+    }),
     unsplashImageAsset(),
-    // Sets up AI Assist with preset prompts
-    // https://www.sanity.io/docs/ai-assist
     assistWithPresets(),
-    // Vision lets you query your content with GROQ in the studio
-    // https://www.sanity.io/docs/the-vision-plugin
     process.env.NODE_ENV === "development" &&
       visionTool({ defaultApiVersion: apiVersion }),
   ].filter(Boolean) as PluginOptions[],
