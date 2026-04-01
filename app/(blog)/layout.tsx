@@ -8,7 +8,7 @@ import {
   type PortableTextBlock,
 } from "next-sanity";
 import { Inter } from "next/font/google";
-import { draftMode } from "next/headers";
+import { draftMode, cookies } from "next/headers"; // Ajout de cookies ici
 
 import PortableText from "./portable-text";
 import * as demo from "@/sanity/lib/demo";
@@ -17,6 +17,7 @@ import { settingsQuery } from "@/sanity/lib/queries";
 import { resolveOpenGraphImage } from "@/sanity/lib/utils";
 import Navbar from "./navbar";
 import { GoogleAnalytics } from '@next/third-parties/google';
+import CookieBanner from "./cookie-banner";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await sanityFetch({
@@ -62,6 +63,10 @@ export default async function RootLayout({
   const data = await sanityFetch({ query: settingsQuery });
   const footerData = data?.footer || [];
   const { isEnabled: isDraftMode } = await draftMode();
+  
+  // Logique de consentement pour les cookies (Next.js 15)
+  const cookieStore = await cookies();
+  const consent = cookieStore.get("local-consent");
 
   return (
     <html lang="fr" className={`${inter.variable} bg-[#fdf6e3] text-black`}>
@@ -110,10 +115,17 @@ export default async function RootLayout({
           </footer>
         </section>
 
+        {/* Le bandeau de cookies */}
+        <CookieBanner />
+
         {/* Outils de prévisualisation Vercel/Sanity */}
         {isDraftMode && <VisualEditing />}
         <SpeedInsights />
-        <GoogleAnalytics gaId="G-HM43BXEXBB" />
+
+        {/* On ne charge Google Analytics QUE si le cookie de consentement est à "true" */}
+        {consent?.value === "true" && (
+          <GoogleAnalytics gaId="G-HM43BXEXBB" />
+        )}
       </body>
     </html>
   );
