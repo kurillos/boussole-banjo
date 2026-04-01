@@ -10,7 +10,7 @@ export default function ContactPage() {
           </h1>
           
           <p className="text-lg text-[#4E3524]/80 leading-relaxed mb-12 italic font-sans">
-            "Que vous soyez un label indépendant, un festival de Bluegrass ou un groupe avec un banjo désaccordé, ma porte est toujours ouverte."
+            &quot;Que vous soyez un label indépendant, un festival de Bluegrass ou un groupe avec un banjo désaccordé, ma porte est toujours ouverte.&quot;
           </p>
           
           <div className="bg-white/40 backdrop-blur-sm p-10 border border-[#4E3524]/10 rounded-2xl shadow-xl">
@@ -36,8 +36,8 @@ export default function ContactPage() {
           </div>
 
           <div className="mt-12 text-sm text-[#4E3524]/50 italic leading-loose">
-            Note : Je privilégie les sorties physiques (Vinyles / CD) pour le plaisir de l'objet, <br />
-            mais j'écoute religieusement tous les liens Bandcamp & Spotify reçus.
+            Note : Je privilégie les sorties physiques (Vinyles / CD) pour le plaisir de l&apos;objet, <br />
+            mais j&apos;écoute religieusement tous les liens Bandcamp & Spotify reçus.
           </div>
         </div>
 

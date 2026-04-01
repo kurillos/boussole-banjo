@@ -91,7 +91,7 @@ export default async function RootLayout({
                     />
                   ) : (
                     <p className="text-[#4E3524]/70 italic text-sm text-center md:text-right">
-                      L'actualité country & folk au format papier jauni.
+                      L&apos;actualité country & folk au format papier jauni.
                     </p>
                   )}
                   <div className="text-[10px] text-[#4E3524]/40 uppercase tracking-[0.2em] font-mono">
