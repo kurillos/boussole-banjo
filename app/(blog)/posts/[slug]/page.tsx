@@ -5,34 +5,36 @@ import { postQuery } from "@/sanity/lib/queries";
 import PortableText from "../../portable-text"; 
 import CoverImage from "../../cover-image";
 import SpotifyPlayer from "../../../components/SpotifyPlayer";
-import { urlForImage } from "@/sanity/lib/utils"; // Assure-toi d'avoir cet utilitaire
+import { urlForImage } from "@/sanity/lib/utils"; 
 
 // 1. Fonction pour les Métadonnées (SEO)
 export async function generateMetadata(
   { params }: { params: Promise<{ slug: string }> }
 ): Promise<Metadata> {
   const { slug } = await params;
-  const post = await sanityFetch({ 
+  
+  // 1. On force le type en "any" pour ignorer les erreurs sur les propriétés de "post"
+  const post = (await sanityFetch({ 
     query: postQuery, 
     params: { slug }, 
     stega: false 
-  });
+  })) as any;
 
-  // Si pas de post, on renvoie des métadonnées vides
   if (!post) return {};
 
-  // On prépare l'image de manière isolée pour plus de clarté et de sécurité
-  const ogImage = post.coverImage?.asset 
-    ? urlForImage(post.coverImage).width(1200).height(630).url()
+  // 2. On prépare l'image. Si elle n'existe pas, ogImage sera "null"
+  const coverImage = post?.coverImage;
+  const ogImage = (coverImage && coverImage.asset)
+    ? urlForImage(coverImage as any)?.width(1200).height(630).url()
     : null;
 
   return {
-    title: post.title,
-    description: post.excerpt,
+    title: post.title ?? "Chronique",
+    description: post.excerpt ?? "",
     openGraph: {
-      title: post.title,
-      description: post.excerpt,
-      // On n'ajoute le tableau d'images que si ogImage existe vraiment
+      title: post.title ?? "Chronique",
+      description: post.excerpt ?? "",
+      // 3. Ici, on n'ajoute "images" QUE si ogImage est une string (donc pas null)
       ...(ogImage ? { 
         images: [{
           url: ogImage,
@@ -48,17 +50,18 @@ export async function generateMetadata(
 export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   
-  const post = await sanityFetch({ 
+  // On utilise aussi "as any" ici pour éviter les erreurs dans le JSX
+  const post = (await sanityFetch({ 
     query: postQuery, 
     params: { slug } 
-  });
+  })) as any;
 
   if (!post) {
     return notFound();
   }
 
   return (
-    <article className="container mx-auto px-5 py-10 max-w-4xl">
+    <article className="container mx-auto px-5 py-10 max-w-4xl min-h-screen bg-[#fdf6e3]">
       {/* Titre style Journal */}
       <h1 className="text-5xl md:text-7xl font-serif mb-8 text-[#4E3524] uppercase leading-tight tracking-tighter">
         {post.title}
@@ -77,9 +80,9 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
       )}
 
       {/* Corps de la chronique */}
-      <div className="prose prose-lg prose-stone max-w-none font-serif text-[#4E3524]/90 leading-relaxed italic-quotes">
+      <div className="prose prose-lg prose-stone max-w-none font-serif text-[#4E3524]/90 leading-relaxed manifeste-content">
         {post.body ? (
-          <PortableText value={post.body as any} />
+          <PortableText value={post.body} />
         ) : (
           <p className="italic text-[#4E3524]/60">Le contenu de cette chronique est en cours de rédaction...</p>
         )}
