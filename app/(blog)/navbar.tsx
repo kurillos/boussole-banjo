@@ -21,6 +21,9 @@ export default function Navbar() {
             <Link href="/" className="hover:underline decoration-[#4E3524]/30 underline-offset-4">
               Chroniques
             </Link>
+
+            <Link href="/manifeste">Manifeste</Link>
+            
             <Link 
               href="/contact" 
               className="px-4 py-2 bg-[#4E3524] text-[#fdf6e3] rounded-sm hover:bg-[#4E3524]/90 transition-colors shadow-sm"
