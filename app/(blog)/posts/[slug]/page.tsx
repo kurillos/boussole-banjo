@@ -18,7 +18,13 @@ export async function generateMetadata(
     stega: false 
   });
 
+  // Si pas de post, on renvoie des métadonnées vides
   if (!post) return {};
+
+  // On prépare l'image de manière isolée pour plus de clarté et de sécurité
+  const ogImage = post.coverImage?.asset 
+    ? urlForImage(post.coverImage).width(1200).height(630).url()
+    : null;
 
   return {
     title: post.title,
@@ -26,13 +32,14 @@ export async function generateMetadata(
     openGraph: {
       title: post.title,
       description: post.excerpt,
-      images: post.coverImage?.asset ? [
-        {
-          url: urlForImage(post.coverImage).width(1200).height(630).url(),
+      // On n'ajoute le tableau d'images que si ogImage existe vraiment
+      ...(ogImage ? { 
+        images: [{
+          url: ogImage,
           width: 1200,
           height: 630,
-        },
-      ] : [],
+        }] 
+      } : {}),
     },
   };
 }
