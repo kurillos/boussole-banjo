@@ -36,7 +36,7 @@ export default function Navbar() {
             </Link>
 
             {/* Recherche : On peut la garder ou la cacher selon la place */}
-            <div className="scale-90 md:scale-100">
+            <div className="scale-90 md:scale-100 hidden md:block">
                <Search />
             </div>
             
