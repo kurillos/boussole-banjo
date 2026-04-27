@@ -1,11 +1,5 @@
 /**
  * This component uses Portable Text to render a post body.
- *
- * You can learn more about Portable Text on:
- * https://www.sanity.io/docs/block-content
- * https://github.com/portabletext/react-portabletext
- * https://portabletext.org/
- *
  */
 
 import {
@@ -13,6 +7,8 @@ import {
   type PortableTextComponents,
   type PortableTextBlock,
 } from "next-sanity";
+// On importe l'outil qui transforme les données Sanity en URL d'image
+import { urlForImage } from "@/sanity/lib/utils";
 
 export default function CustomPortableText({
   className,
@@ -22,6 +18,26 @@ export default function CustomPortableText({
   value: PortableTextBlock[];
 }) {
   const components: PortableTextComponents = {
+    // --- AJOUT DU BLOC TYPES POUR LES IMAGES ---
+    types: {
+      image: ({ value }) => {
+        return (
+          <div className="my-8 space-y-2">
+            <img
+              className="mx-auto rounded-xl shadow-md border border-stone-200"
+              src={urlForImage(value).url()}
+              alt={value.alt || "Illustration Boussole & Banjo"}
+            />
+            {value.caption && (
+              <p className="text-center text-sm italic text-stone-500">
+                {value.caption}
+              </p>
+            )}
+          </div>
+        );
+      },
+    },
+    // --- FIN DE L'AJOUT ---
     block: {
       h5: ({ children }) => (
         <h5 className="mb-2 text-sm font-semibold">{children}</h5>
@@ -33,7 +49,7 @@ export default function CustomPortableText({
     marks: {
       link: ({ children, value }) => {
         return (
-          <a href={value?.href} rel="noreferrer noopener">
+          <a href={value?.href} rel="noreferrer noopener" className="underline decoration-stone-400">
             {children}
           </a>
         );
