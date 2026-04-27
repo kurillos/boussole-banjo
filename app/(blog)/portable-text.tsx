@@ -13,8 +13,9 @@ import {
   type PortableTextComponents,
   type PortableTextBlock,
 } from "next-sanity";
-// Import de l'utilitaire d'image de Sanity
-import { urlForImage } from "@/sanity/lib/utils";
+
+// L'import correct pour TON projet :
+import { urlFor } from "@/sanity/lib/image";
 
 export default function CustomPortableText({
   className,
@@ -26,7 +27,6 @@ export default function CustomPortableText({
   const components: PortableTextComponents = {
     types: {
       image: ({ value }: any) => {
-        // Vérification de sécurité pour éviter que le build plante si l'image est vide
         if (!value?.asset?._ref) {
           return null;
         }
@@ -34,7 +34,8 @@ export default function CustomPortableText({
           <div className="my-10 flex flex-col items-center justify-center">
             <img
               className="mx-auto rounded-xl shadow-lg border border-stone-200"
-              src={urlForImage(value).width(1200).url()}
+              // On utilise urlFor ici
+              src={urlFor(value).width(1200).auto("format").url()}
               alt={value.alt || "Illustration Boussole & Banjo"}
               loading="lazy"
             />
@@ -49,22 +50,16 @@ export default function CustomPortableText({
     },
     block: {
       h5: ({ children }) => (
-        <h5 className="mb-2 text-sm font-semibold text-stone-800">{children}</h5>
+        <h5 className="mb-2 text-sm font-semibold">{children}</h5>
       ),
       h6: ({ children }) => (
-        <h6 className="mb-1 text-xs font-semibold text-stone-800">{children}</h6>
+        <h6 className="mb-1 text-xs font-semibold">{children}</h6>
       ),
-      // Optionnel : style pour les paragraphes normaux si besoin
-      normal: ({ children }) => <p className="mb-4">{children}</p>,
     },
     marks: {
       link: ({ children, value }) => {
         return (
-          <a
-            href={value?.href}
-            rel="noreferrer noopener"
-            className="underline decoration-stone-400 hover:text-stone-600 transition-colors"
-          >
+          <a href={value?.href} rel="noreferrer noopener" className="underline">
             {children}
           </a>
         );
