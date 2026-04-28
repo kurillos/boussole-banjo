@@ -7,14 +7,12 @@
  * https://portabletext.org/
  *
  */
-
 import {
   PortableText,
   type PortableTextComponents,
   type PortableTextBlock,
 } from "next-sanity";
 
-// L'import correct pour TON projet :
 import { urlFor } from "@/sanity/lib/image";
 
 export default function CustomPortableText({
@@ -27,14 +25,18 @@ export default function CustomPortableText({
   const components: PortableTextComponents = {
     types: {
       image: ({ value }: any) => {
+        // DEBUG : affiche en rouge ce que Sanity renvoie si l'asset est manquant
         if (!value?.asset?._ref) {
-          return null;
+          return (
+            <pre style={{ background: "red", color: "white", padding: "8px", fontSize: "10px" }}>
+              {JSON.stringify(value, null, 2)}
+            </pre>
+          );
         }
         return (
           <div className="my-10 flex flex-col items-center justify-center">
             <img
               className="mx-auto rounded-xl shadow-lg border border-stone-200"
-              // On utilise urlFor ici
               src={urlFor(value).width(1200).auto("format").url()}
               alt={value.alt || "Illustration Boussole & Banjo"}
               loading="lazy"
