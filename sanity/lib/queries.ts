@@ -32,6 +32,12 @@ export const postQuery = defineQuery(`
   *[_type == "chronique" && slug.current == $slug][0] {
     ...,
     ${chroniqueFields},
-    body
+    "body": body[] {
+      ...,
+      _type == "image" => {
+        ...,
+        asset->
+      }
+    }
   }
 `);
