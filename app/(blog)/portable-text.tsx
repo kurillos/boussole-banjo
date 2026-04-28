@@ -25,19 +25,22 @@ export default function CustomPortableText({
   const components: PortableTextComponents = {
     types: {
       image: ({ value }: any) => {
-        // DEBUG : affiche en rouge ce que Sanity renvoie si l'asset est manquant
-        if (!value?.asset?._ref) {
-          return (
-            <pre style={{ background: "red", color: "white", padding: "8px", fontSize: "10px" }}>
-              {JSON.stringify(value, null, 2)}
-            </pre>
-          );
+        // L'asset peut être résolu (objet avec _id) ou une référence (objet avec _ref)
+        const hasAsset = value?.asset?._ref || value?.asset?._id;
+        if (!hasAsset) {
+          return null;
         }
+
+        // Si l'asset est déjà résolu, on utilise son URL directement
+        const imageUrl = value.asset.url
+          ? `${value.asset.url}?w=1200&auto=format`
+          : urlFor(value).width(1200).auto("format").url();
+
         return (
           <div className="my-10 flex flex-col items-center justify-center">
             <img
               className="mx-auto rounded-xl shadow-lg border border-stone-200"
-              src={urlFor(value).width(1200).auto("format").url()}
+              src={imageUrl}
               alt={value.alt || "Illustration Boussole & Banjo"}
               loading="lazy"
             />
