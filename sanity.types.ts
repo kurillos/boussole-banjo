@@ -13,6 +13,31 @@
  */
 
 // Source: schema.json
+export type Partenaire = {
+  _id: string;
+  _type: "partenaire";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name?: string;
+  logo?: {
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
+  description?: string;
+  category?: "sellier" | "tatoueur" | "musique" | "mode" | "bar" | "autre";
+  website?: string;
+  order?: number;
+};
+
 export type About = {
   _id: string;
   _type: "about";
@@ -430,8 +455,45 @@ export type SanityAssetSourceData = {
   url?: string;
 };
 
-export type AllSanitySchemaTypes = About | Author | Settings | Chronique | SanityAssistInstructionTask | SanityAssistTaskStatus | SanityAssistSchemaTypeAnnotations | SanityAssistOutputType | SanityAssistOutputField | SanityAssistInstructionContext | AssistInstructionContext | SanityAssistInstructionUserInput | SanityAssistInstructionPrompt | SanityAssistInstructionFieldRef | SanityAssistInstruction | SanityAssistSchemaTypeField | SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityImageHotspot | SanityImageCrop | SanityFileAsset | SanityImageAsset | SanityImageMetadata | Geopoint | Slug | SanityAssetSourceData;
+export type AllSanitySchemaTypes = Partenaire | About | Author | Settings | Chronique | SanityAssistInstructionTask | SanityAssistTaskStatus | SanityAssistSchemaTypeAnnotations | SanityAssistOutputType | SanityAssistOutputField | SanityAssistInstructionContext | AssistInstructionContext | SanityAssistInstructionUserInput | SanityAssistInstructionPrompt | SanityAssistInstructionFieldRef | SanityAssistInstruction | SanityAssistSchemaTypeField | SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityImageHotspot | SanityImageCrop | SanityFileAsset | SanityImageAsset | SanityImageMetadata | Geopoint | Slug | SanityAssetSourceData;
 export declare const internalGroqTypeReferenceTo: unique symbol;
+// Source: ./app/(blog)/manifeste/page.tsx
+// Variable: manifesteQuery
+// Query: *[_type == "about"][0]{  title,  content}
+export type ManifesteQueryResult = {
+  title: string | null;
+  content: Array<{
+    children?: Array<{
+      marks?: Array<string>;
+      text?: string;
+      _type: "span";
+      _key: string;
+    }>;
+    style?: "blockquote" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "normal";
+    listItem?: "bullet" | "number";
+    markDefs?: Array<{
+      href?: string;
+      _type: "link";
+      _key: string;
+    }>;
+    level?: number;
+    _type: "block";
+    _key: string;
+  } | {
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+    _key: string;
+  }> | null;
+} | null;
+
 // Source: ./sanity/lib/queries.ts
 // Variable: settingsQuery
 // Query: *[_type == "settings"][0]
@@ -576,7 +638,7 @@ export type MoreStoriesQueryResult = Array<{
   spotifyUrl: string | null;
 }>;
 // Variable: postQuery
-// Query: *[_type == "chronique" && slug.current == $slug][0] {    ...,      _id,  "status": select(_originalId in path("drafts.**") => "draft", "published"),  "title": coalesce(title, "Sans titre"),  "slug": slug.current,  "date": coalesce(publishedAt, _createdAt),  "coverImage": coverImage,  "rating": rating,  "author": author->{"name": coalesce(name, "Cyril"), picture},  "excerpt": array::join(string::split(pt::text(body), "")[0...200], "") + "...",  spotifyUrl,    body  }
+// Query: *[_type == "chronique" && slug.current == $slug][0] {    ...,      _id,  "status": select(_originalId in path("drafts.**") => "draft", "published"),  "title": coalesce(title, "Sans titre"),  "slug": slug.current,  "date": coalesce(publishedAt, _createdAt),  "coverImage": coverImage,  "rating": rating,  "author": author->{"name": coalesce(name, "Cyril"), picture},  "excerpt": array::join(string::split(pt::text(body), "")[0...200], "") + "...",  spotifyUrl,    "body": body[] {      ...,      _type == "image" => {        ...,        asset->      }    }  }
 export type PostQueryResult = {
   _id: string;
   _type: "chronique";
@@ -619,12 +681,28 @@ export type PostQueryResult = {
     _type: "block";
     _key: string;
   } | {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
+    asset: {
+      _id: string;
+      _type: "sanity.imageAsset";
+      _createdAt: string;
+      _updatedAt: string;
+      _rev: string;
+      originalFilename?: string;
+      label?: string;
+      title?: string;
+      description?: string;
+      altText?: string;
+      sha1hash?: string;
+      extension?: string;
+      mimeType?: string;
+      size?: number;
+      assetId?: string;
+      uploadId?: string;
+      path?: string;
+      url?: string;
+      metadata?: SanityImageMetadata;
+      source?: SanityAssetSourceData;
+    } | null;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
@@ -638,14 +716,53 @@ export type PostQueryResult = {
   author: null;
   excerpt: string;
 } | null;
+// Variable: partenairesQuery
+// Query: *[_type == "partenaire"] | order(order asc, name asc) {    _id,    name,    "logo": logo { ..., asset-> },    description,    category,    website  }
+export type PartenairesQueryResult = Array<{
+  _id: string;
+  name: string | null;
+  logo: {
+    asset: {
+      _id: string;
+      _type: "sanity.imageAsset";
+      _createdAt: string;
+      _updatedAt: string;
+      _rev: string;
+      originalFilename?: string;
+      label?: string;
+      title?: string;
+      description?: string;
+      altText?: string;
+      sha1hash?: string;
+      extension?: string;
+      mimeType?: string;
+      size?: number;
+      assetId?: string;
+      uploadId?: string;
+      path?: string;
+      url?: string;
+      metadata?: SanityImageMetadata;
+      source?: SanityAssetSourceData;
+    } | null;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  } | null;
+  description: string | null;
+  category: "autre" | "bar" | "mode" | "musique" | "sellier" | "tatoueur" | null;
+  website: string | null;
+}>;
 
 // Query TypeMap
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
+    "*[_type == \"about\"][0]{\n  title,\n  content\n}": ManifesteQueryResult;
     "*[_type == \"settings\"][0]": SettingsQueryResult;
     "\n  *[_type == \"chronique\" && defined(slug.current) && publishedAt <= now()] | order(publishedAt desc) [0] {\n    body,\n    \n  _id,\n  \"status\": select(_originalId in path(\"drafts.**\") => \"draft\", \"published\"),\n  \"title\": coalesce(title, \"Sans titre\"),\n  \"slug\": slug.current,\n  \"date\": coalesce(publishedAt, _createdAt),\n  \"coverImage\": coverImage,\n  \"rating\": rating,\n  \"author\": author->{\"name\": coalesce(name, \"Cyril\"), picture},\n  \"excerpt\": array::join(string::split(pt::text(body), \"\")[0...200], \"\") + \"...\",\n  spotifyUrl\n\n  }\n": HeroQueryResult;
     "\n  *[_type == \"chronique\" && _id != $skip && defined(slug.current) && publishedAt <= now()] | order(publishedAt desc) [0...$limit] {\n    \n  _id,\n  \"status\": select(_originalId in path(\"drafts.**\") => \"draft\", \"published\"),\n  \"title\": coalesce(title, \"Sans titre\"),\n  \"slug\": slug.current,\n  \"date\": coalesce(publishedAt, _createdAt),\n  \"coverImage\": coverImage,\n  \"rating\": rating,\n  \"author\": author->{\"name\": coalesce(name, \"Cyril\"), picture},\n  \"excerpt\": array::join(string::split(pt::text(body), \"\")[0...200], \"\") + \"...\",\n  spotifyUrl\n\n  }\n": MoreStoriesQueryResult;
-    "\n  *[_type == \"chronique\" && slug.current == $slug][0] {\n    ...,\n    \n  _id,\n  \"status\": select(_originalId in path(\"drafts.**\") => \"draft\", \"published\"),\n  \"title\": coalesce(title, \"Sans titre\"),\n  \"slug\": slug.current,\n  \"date\": coalesce(publishedAt, _createdAt),\n  \"coverImage\": coverImage,\n  \"rating\": rating,\n  \"author\": author->{\"name\": coalesce(name, \"Cyril\"), picture},\n  \"excerpt\": array::join(string::split(pt::text(body), \"\")[0...200], \"\") + \"...\",\n  spotifyUrl\n,\n    body\n  }\n": PostQueryResult;
+    "\n  *[_type == \"chronique\" && slug.current == $slug][0] {\n    ...,\n    \n  _id,\n  \"status\": select(_originalId in path(\"drafts.**\") => \"draft\", \"published\"),\n  \"title\": coalesce(title, \"Sans titre\"),\n  \"slug\": slug.current,\n  \"date\": coalesce(publishedAt, _createdAt),\n  \"coverImage\": coverImage,\n  \"rating\": rating,\n  \"author\": author->{\"name\": coalesce(name, \"Cyril\"), picture},\n  \"excerpt\": array::join(string::split(pt::text(body), \"\")[0...200], \"\") + \"...\",\n  spotifyUrl\n,\n    \"body\": body[] {\n      ...,\n      _type == \"image\" => {\n        ...,\n        asset->\n      }\n    }\n  }\n": PostQueryResult;
+    "\n  *[_type == \"partenaire\"] | order(order asc, name asc) {\n    _id,\n    name,\n    \"logo\": logo { ..., asset-> },\n    description,\n    category,\n    website\n  }\n": PartenairesQueryResult;
   }
 }
