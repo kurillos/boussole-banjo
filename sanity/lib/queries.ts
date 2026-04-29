@@ -41,3 +41,14 @@ export const postQuery = defineQuery(`
     }
   }
 `);
+
+export const partenairesQuery = defineQuery(`
+  *[_type == "partenaire"] | order(order asc, name asc) {
+    _id,
+    name,
+    "logo": logo { ..., asset-> },
+    description,
+    category,
+    website
+  }
+`);

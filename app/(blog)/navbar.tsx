@@ -8,7 +8,7 @@ export default function Navbar() {
       <Container>
         <div className="flex h-16 md:h-20 items-center justify-between gap-2">
           
-          {/* Logo : On réduit un peu la taille sur mobile */}
+          {/* Logo */}
           <Link 
             href="/" 
             className="text-lg sm:text-xl md:text-2xl font-bold tracking-tighter text-[#4E3524] font-serif hover:opacity-80 transition-opacity whitespace-nowrap"
@@ -26,8 +26,13 @@ export default function Navbar() {
             <Link href="/manifeste" className="hover:underline decoration-[#4E3524]/30 underline-offset-4">
               Manifeste
             </Link>
+
+            {/* Lien Partenaires — caché sur très petit mobile */}
+            <Link href="/partenaires" className="hidden xs:block hover:underline decoration-[#4E3524]/30 underline-offset-4">
+              Partenaires
+            </Link>
             
-            {/* Contact : Caché sur mobile, visible dès le petit format tablette (sm) */}
+            {/* Contact */}
             <Link 
               href="/contact" 
               className="hidden sm:block px-4 py-2 bg-[#4E3524] text-[#fdf6e3] rounded-sm hover:bg-[#4E3524]/90 transition-colors shadow-sm"
@@ -35,12 +40,11 @@ export default function Navbar() {
               Contact
             </Link>
 
-            {/* Recherche : On peut la garder ou la cacher selon la place */}
             <div className="scale-90 md:scale-100">
                <Search />
             </div>
 
-            {/* Bouton Admin (Cadenas) : Visible uniquement sur Desktop (md:) */}
+            {/* Bouton Admin (Cadenas) */}
             <Link 
               href="/studio" 
               className="hidden md:flex p-2 text-[#4E3524]/40 hover:text-[#4E3524] transition-colors"

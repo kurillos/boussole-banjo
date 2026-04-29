@@ -16,12 +16,12 @@ import { apiVersion, dataset, projectId, studioUrl } from "@/sanity/lib/api";
 import { assistWithPresets } from "@/sanity/plugins/assist";
 import { resolveHref } from "@/sanity/lib/utils";
 
-// Import de tes schémas
+// Import des schémas
 import chronique from "@/sanity/schemas/chronique";
 import author from "@/sanity/schemas/documents/author";
 import settings from "@/sanity/schemas/singletons/settings";
-// LE CHEMIN CORRIGÉ ICI :
 import about from "@/sanity/schemas/about";
+import partenaire from "@/sanity/schemas/partenaire"; // ← NOUVEAU
 
 const homeLocation = {
   title: "Home",
@@ -33,7 +33,7 @@ export default defineConfig({
   projectId,
   dataset,
   schema: {
-    types: [chronique, settings, author, about],
+    types: [chronique, settings, author, about, partenaire], // ← AJOUTÉ
   },
   plugins: [
     presentationTool({
@@ -69,13 +69,12 @@ export default defineConfig({
       },
       previewUrl: { previewMode: { enable: "/api/draft-mode/enable" } },
     }),
-    // ON FORCE LA STRUCTURE ICI POUR VOIR LE MANIFESTE
     structureTool({
       structure: (S) =>
         S.list()
           .title("Contenu")
           .items([
-            // Bouton Manifeste
+            // Manifeste
             S.listItem()
               .title("Manifeste")
               .child(
@@ -84,12 +83,20 @@ export default defineConfig({
                   .documentId("about")
               ),
             S.divider(),
+            // Partenaires ← NOUVEAU
+            S.listItem()
+              .title("Partenaires")
+              .child(
+                S.documentTypeList("partenaire")
+                  .title("Partenaires")
+              ),
+            S.divider(),
             // Liste automatique pour Chroniques et Authors
             ...S.documentTypeListItems().filter(
-              (item) => !["about", "settings", "assist.instruction.context"].includes(item.getId()!)
+              (item) => !["about", "settings", "partenaire", "assist.instruction.context"].includes(item.getId()!)
             ),
             S.divider(),
-            // Bouton Paramètres
+            // Paramètres
             S.listItem()
               .title("Paramètres du site")
               .child(
