@@ -29,7 +29,7 @@ export default function Navbar() {
 
             {/* Lien Partenaires — caché sur très petit mobile */}
             <Link href="/partenaires" className="hover:underline decoration-[#4E3524]/30 underline-offset-4">
-              Partenaires
+              Carnet de Route
             </Link>
 
             {/* Contact */}
