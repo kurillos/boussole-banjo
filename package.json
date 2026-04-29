@@ -43,6 +43,6 @@
   "devDependencies": {
     "eslint": "^9.13.0",
     "eslint-config-next": "^15.0.0",
-    "sanity": "^5.22.0"
+    "sanity": "^3.99.0"
   }
 }
