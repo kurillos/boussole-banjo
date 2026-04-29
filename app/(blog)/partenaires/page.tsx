@@ -29,7 +29,7 @@ export default async function PartenairesPage() {
           Partenaires
         </h1>
         <p className="mt-6 max-w-xl mx-auto text-[#4E3524]/70 font-serif text-lg leading-relaxed px-5">
-          Des artisans, créateurs et passionnés qui incarnent l'esprit de la country moderne — l'authenticité avant tout.
+          Des artisans, créateurs et passionnés qui incarnent l&apos;esprit de la country moderne — l&apos;authenticité avant tout.
         </p>
       </div>
 
